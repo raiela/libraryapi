@@ -4,9 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -14,6 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@EntityListeners(AuditingEntityListener.class)
 public class Book {
     @Id
     @Column(name = "id")
@@ -39,4 +44,16 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "id_autor")
     private Author author;
+
+
+    @CreatedDate
+    @Column(name = "data_cadastro")
+    private LocalDateTime cadastreDate;
+
+    @LastModifiedDate
+    @Column(name = "data_atualizacao")
+    private LocalDateTime atualizationDate;
+
+    @Column(name = "id_usuario")
+    private UUID idUser;
 }
