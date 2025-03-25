@@ -3,8 +3,10 @@ package io.github.raiela.libraryapi.controller.dto;
 import io.github.raiela.libraryapi.model.Author;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-public record AuthorDTO(String name,
+public record AuthorDTO(UUID id,
+                        String name,
                         LocalDate birthDate,
                         String nationality) {
 

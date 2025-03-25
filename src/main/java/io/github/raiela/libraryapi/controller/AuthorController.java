@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores")
@@ -41,7 +43,7 @@ public class AuthorController {
         Optional<Author> authorGet = authorService.findById(idAuthor);
         if(authorGet.isPresent()){
             Author author = authorGet.get();
-            AuthorDTO dto = new AuthorDTO(author.getName(), author.getBirthDate(), author.getNationality());
+            AuthorDTO dto = new AuthorDTO(author.getId(), author.getName(), author.getBirthDate(), author.getNationality());
             return  ResponseEntity.ok(dto);
         }
         return ResponseEntity.notFound().build();
@@ -57,5 +59,21 @@ public class AuthorController {
 
         authorService.deleteAuthor(authorGet.get());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AuthorDTO>> findAuthor(@RequestParam(value = "nome", required = false) String name,
+                                                      @RequestParam(value = "nacionalidade", required = false) String nationality){
+
+        List<Author> listAuthors = authorService.filterAuthor(name, nationality);
+
+        List<AuthorDTO> dtos = listAuthors.stream()
+                .map(author -> new AuthorDTO(author.getId(),
+                                                author.getName(),
+                                                author.getBirthDate(),
+                                                author.getNationality())
+                ).collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 }
