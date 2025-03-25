@@ -4,13 +4,12 @@ import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/autores")
@@ -34,5 +33,17 @@ public class AuthorController {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<AuthorDTO> getAuthor(@PathVariable("id") String id){
+        UUID idAuthor = UUID.fromString(id);
+        Optional<Author> authorGet = authorService.findById(idAuthor);
+        if(authorGet.isPresent()){
+            Author author = authorGet.get();
+            AuthorDTO dto = new AuthorDTO(author.getName(), author.getBirthDate(), author.getNationality());
+            return  ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.notFound().build();
     }
 }
