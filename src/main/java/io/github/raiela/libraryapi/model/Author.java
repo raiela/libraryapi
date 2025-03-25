@@ -31,6 +31,6 @@ public class Author {
     private String nationality ;
 
     @OneToMany(mappedBy = "author")
-    private List<Author> books;
+    private List<Book> books;
 
 }
