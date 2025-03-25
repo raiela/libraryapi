@@ -22,4 +22,6 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     List<Book> findByTitleOrIsbn(String title, String isbn);
 
     List<Book> findByPublicationDateBetween(LocalDate start, LocalDate end);
+
+    boolean existsByAuthor(Author author);
 }

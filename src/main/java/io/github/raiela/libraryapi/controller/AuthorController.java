@@ -1,10 +1,12 @@
 package io.github.raiela.libraryapi.controller;
 
+import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
 import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
+import io.github.raiela.libraryapi.controller.dto.ErrorResponse;
+import io.github.raiela.libraryapi.exceptions.NotAllowedActionException;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,17 +27,22 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody AuthorDTO author){
-        Author authorEntity = author.mapperToAuthor();
-        authorService.saveAuthor(authorEntity);
+    public ResponseEntity<Object> save(@RequestBody AuthorDTO author){
+        try {
+            Author authorEntity = author.mapperToAuthor();
+            authorService.saveAuthor(authorEntity);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(authorEntity.getId())
-                .toUri();
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(authorEntity.getId())
+                    .toUri();
 
-        return ResponseEntity.created(location).build();
+            return ResponseEntity.created(location).build();
+        } catch (DuplicatedRegisterException e) {
+            ErrorResponse errorResponse = ErrorResponse.conflictError(e.getMessage());
+            return ResponseEntity.status(errorResponse.status()).body(errorResponse);
+        }
     }
 
     @GetMapping("{id}")
@@ -51,15 +58,20 @@ public class AuthorController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") String id){
-        UUID idAuthor = UUID.fromString(id);
-        Optional<Author> authorGet = authorService.findById(idAuthor);
+    public ResponseEntity<Object> delete(@PathVariable("id") String id){
+        try {
+            UUID idAuthor = UUID.fromString(id);
+            Optional<Author> authorGet = authorService.findById(idAuthor);
 
-        if(authorGet.isEmpty())
-            return ResponseEntity.notFound().build();
+            if (authorGet.isEmpty())
+                return ResponseEntity.notFound().build();
 
-        authorService.deleteAuthor(authorGet.get());
-        return ResponseEntity.noContent().build();
+            authorService.deleteAuthor(authorGet.get());
+            return ResponseEntity.noContent().build();
+        } catch (NotAllowedActionException e){
+            ErrorResponse errorResponse = ErrorResponse.defaultResponse(e.getMessage());
+            return ResponseEntity.status(errorResponse.status()).body(errorResponse);
+        }
     }
 
     @GetMapping
@@ -79,20 +91,25 @@ public class AuthorController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> update(@PathVariable("id") String id, @RequestBody AuthorDTO dto){
-        UUID idAuthor = UUID.fromString(id);
-        Optional<Author> authorGet = authorService.findById(idAuthor);
+    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody AuthorDTO dto){
+        try {
+            UUID idAuthor = UUID.fromString(id);
+            Optional<Author> authorGet = authorService.findById(idAuthor);
 
-        if(authorGet.isEmpty())
-            return ResponseEntity.notFound().build();
+            if (authorGet.isEmpty())
+                return ResponseEntity.notFound().build();
 
-        Author author = authorGet.get();
-        author.setName(dto.name());
-        author.setNationality(dto.nationality());
-        author.setNationality(dto.nationality());
+            Author author = authorGet.get();
+            author.setName(dto.name());
+            author.setNationality(dto.nationality());
+            author.setNationality(dto.nationality());
 
-        authorService.updateAuthor(author);
+            authorService.updateAuthor(author);
 
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build();
+        } catch (DuplicatedRegisterException e) {
+            ErrorResponse errorResponse = ErrorResponse.conflictError(e.getMessage());
+            return ResponseEntity.status(errorResponse.status()).body(errorResponse);
+        }
     }
 }
