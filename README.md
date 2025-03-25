@@ -9,3 +9,4 @@
   - Falar sobre exceções (personalizadas, resposta de erros)
   - Lombok - AllArgsConstructor
   - @Valid from  spring-boot-starter-validation
+  - @RestControllerAdvice

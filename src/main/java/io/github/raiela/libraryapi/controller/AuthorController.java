@@ -2,7 +2,7 @@ package io.github.raiela.libraryapi.controller;
 
 import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
 import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
-import io.github.raiela.libraryapi.controller.dto.ErrorResponse;
+import io.github.raiela.libraryapi.controller.dto.ErrorExceptResponse;
 import io.github.raiela.libraryapi.exceptions.NotAllowedActionException;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
@@ -39,7 +39,7 @@ public class AuthorController {
 
             return ResponseEntity.created(location).build();
         } catch (DuplicatedRegisterException e) {
-            ErrorResponse errorResponse = ErrorResponse.conflictError(e.getMessage());
+            ErrorExceptResponse errorResponse = ErrorExceptResponse.conflictError(e.getMessage());
             return ResponseEntity.status(errorResponse.status()).body(errorResponse);
         }
     }
@@ -68,7 +68,7 @@ public class AuthorController {
             authorService.deleteAuthor(authorGet.get());
             return ResponseEntity.noContent().build();
         } catch (NotAllowedActionException e){
-            ErrorResponse errorResponse = ErrorResponse.defaultResponse(e.getMessage());
+            ErrorExceptResponse errorResponse = ErrorExceptResponse.defaultResponse(e.getMessage());
             return ResponseEntity.status(errorResponse.status()).body(errorResponse);
         }
     }
@@ -107,7 +107,7 @@ public class AuthorController {
 
             return ResponseEntity.noContent().build();
         } catch (DuplicatedRegisterException e) {
-            ErrorResponse errorResponse = ErrorResponse.conflictError(e.getMessage());
+            ErrorExceptResponse errorResponse = ErrorExceptResponse.conflictError(e.getMessage());
             return ResponseEntity.status(errorResponse.status()).body(errorResponse);
         }
     }
