@@ -21,6 +21,12 @@ public class AuthorService {
         return authorRepository.save(author);
     }
 
+    public void updateAuthor(Author author){
+        if(author.getId() == null)
+            throw new IllegalArgumentException("Para atualizar, é necessário que o autor já esteja na base");
+        authorRepository.save(author);
+    }
+
     public Optional<Author> findById(UUID id){
         return authorRepository.findById(id);
     }

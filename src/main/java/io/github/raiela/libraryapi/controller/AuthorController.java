@@ -4,6 +4,7 @@ import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -75,5 +76,23 @@ public class AuthorController {
                 ).collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> update(@PathVariable("id") String id, @RequestBody AuthorDTO dto){
+        UUID idAuthor = UUID.fromString(id);
+        Optional<Author> authorGet = authorService.findById(idAuthor);
+
+        if(authorGet.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        Author author = authorGet.get();
+        author.setName(dto.name());
+        author.setNationality(dto.nationality());
+        author.setNationality(dto.nationality());
+
+        authorService.updateAuthor(author);
+
+        return ResponseEntity.noContent().build();
     }
 }
