@@ -5,6 +5,7 @@ import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.repository.AuthorRepository;
 import io.github.raiela.libraryapi.repository.BookRepository;
 import io.github.raiela.libraryapi.validator.AuthorValidator;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,17 +13,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
     private final AuthorValidator authorValidator;
     private final BookRepository bookRepository;
-
-    public AuthorService(AuthorRepository authorRepository, AuthorValidator authorValidator, BookRepository bookRepository) {
-        this.authorRepository = authorRepository;
-        this.authorValidator = authorValidator;
-        this.bookRepository = bookRepository;
-    }
 
     public Author saveAuthor(Author author){
         authorValidator.validar(author);

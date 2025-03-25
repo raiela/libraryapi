@@ -6,6 +6,7 @@ import io.github.raiela.libraryapi.controller.dto.ErrorResponse;
 import io.github.raiela.libraryapi.exceptions.NotAllowedActionException;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,13 +19,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores")
+@AllArgsConstructor
 public class AuthorController {
 
     private final AuthorService authorService;
-
-    public AuthorController(AuthorService authorService) {
-        this.authorService = authorService;
-    }
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody AuthorDTO author){
