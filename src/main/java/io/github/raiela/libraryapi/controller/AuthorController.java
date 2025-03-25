@@ -77,7 +77,8 @@ public class AuthorController {
     public ResponseEntity<List<AuthorDTO>> findAuthor(@RequestParam(value = "nome", required = false) String name,
                                                       @RequestParam(value = "nacionalidade", required = false) String nationality){
 
-        List<Author> listAuthors = authorService.filterAuthor(name, nationality);
+//        List<Author> listAuthors = authorService.filterAuthor(name, nationality);
+        List<Author> listAuthors = authorService.filterByAuthorWithExample(name, nationality);
 
         List<AuthorDTO> dtos = listAuthors.stream()
                 .map(author -> new AuthorDTO(author.getId(),

@@ -6,6 +6,8 @@ import io.github.raiela.libraryapi.repository.AuthorRepository;
 import io.github.raiela.libraryapi.repository.BookRepository;
 import io.github.raiela.libraryapi.validator.AuthorValidator;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,6 +55,22 @@ public class AuthorService {
             return authorRepository.findByNationality(nationality);
 
         return authorRepository.findAll();
+    }
+
+    public List<Author> filterByAuthorWithExample(String name, String nationality){
+        Author author = new Author();
+        author.setName(name);
+        author.setNationality(nationality);
+
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreCase()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        Example<Author> authorExample = Example.of(author, matcher);
+
+        return authorRepository.findAll(authorExample);
     }
 
     public boolean hasBooks(Author author){

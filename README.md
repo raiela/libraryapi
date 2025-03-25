@@ -10,3 +10,4 @@
   - Lombok - AllArgsConstructor
   - @Valid from  spring-boot-starter-validation
   - @RestControllerAdvice
+  - Pesquisa dinâmica com Example
