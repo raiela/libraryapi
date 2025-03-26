@@ -3,6 +3,7 @@ package io.github.raiela.libraryapi.controller.common;
 import io.github.raiela.libraryapi.controller.dto.ErrorExceptField;
 import io.github.raiela.libraryapi.controller.dto.ErrorExceptResponse;
 import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
+import io.github.raiela.libraryapi.exceptions.GenericBusinessException;
 import io.github.raiela.libraryapi.exceptions.NotAllowedActionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -32,6 +33,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorExceptResponse handleDuplicatedRegisterException(DuplicatedRegisterException e){
         return ErrorExceptResponse.conflictError(e.getMessage());
+    }
+
+    @ExceptionHandler(GenericBusinessException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorExceptResponse handleGenericBusinessException(GenericBusinessException e){
+        return new ErrorExceptResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Erro de validação!", List.of(new ErrorExceptField(e.getField(), e.getMessage())));
     }
 
     @ExceptionHandler(NotAllowedActionException.class)
