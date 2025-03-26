@@ -1,10 +1,7 @@
 package io.github.raiela.libraryapi.controller;
 
 import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
-import io.github.raiela.libraryapi.controller.dto.ErrorExceptResponse;
 import io.github.raiela.libraryapi.controller.mappers.AuthorMapper;
-import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
-import io.github.raiela.libraryapi.exceptions.NotAllowedActionException;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
 import jakarta.validation.Valid;
@@ -27,31 +24,26 @@ public class AuthorController implements GenericController {
     private final AuthorMapper authorMapper;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO dto){
-        try {
-            Author author = authorMapper.toEntity(dto);
-            authorService.saveAuthor(author);
+    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO dto) {
 
-            URI location = generateLocationHeader(author.getId());
+        Author author = authorMapper.toEntity(dto);
+        authorService.saveAuthor(author);
+        URI location = generateLocationHeader(author.getId());
 
-            return ResponseEntity.created(location).build();
-        } catch (DuplicatedRegisterException e) {
-            ErrorExceptResponse errorResponse = ErrorExceptResponse.conflictError(e.getMessage());
-            return ResponseEntity.status(errorResponse.status()).body(errorResponse);
-        }
+        return ResponseEntity.created(location).build();
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AuthorDTO> getAuthor(@PathVariable("id") String id){
+    public ResponseEntity<AuthorDTO> getAuthor(@PathVariable("id") String id) {
         UUID idAuthor = UUID.fromString(id);
         Optional<Author> authorGet = authorService.findById(idAuthor);
 
-        return  authorService
+        return authorService
                 .findById(idAuthor)
                 .map(author -> {
                     AuthorDTO dto = authorMapper.toDTO(author);
-                    return  ResponseEntity.ok(dto);
-                }).orElseGet( () -> ResponseEntity.notFound().build());
+                    return ResponseEntity.ok(dto);
+                }).orElseGet(() -> ResponseEntity.notFound().build());
 
 //        if(authorGet.isPresent()){
 //            Author author = authorGet.get();
@@ -62,25 +54,21 @@ public class AuthorController implements GenericController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") String id){
-        try {
-            UUID idAuthor = UUID.fromString(id);
-            Optional<Author> authorGet = authorService.findById(idAuthor);
+    public ResponseEntity<Object> delete(@PathVariable("id") String id) {
 
-            if (authorGet.isEmpty())
-                return ResponseEntity.notFound().build();
+        UUID idAuthor = UUID.fromString(id);
+        Optional<Author> authorGet = authorService.findById(idAuthor);
 
-            authorService.deleteAuthor(authorGet.get());
-            return ResponseEntity.noContent().build();
-        } catch (NotAllowedActionException e){
-            ErrorExceptResponse errorResponse = ErrorExceptResponse.defaultResponse(e.getMessage());
-            return ResponseEntity.status(errorResponse.status()).body(errorResponse);
-        }
+        if (authorGet.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        authorService.deleteAuthor(authorGet.get());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
     public ResponseEntity<List<AuthorDTO>> findAuthor(@RequestParam(value = "nome", required = false) String name,
-                                                      @RequestParam(value = "nacionalidade", required = false) String nationality){
+                                                      @RequestParam(value = "nacionalidade", required = false) String nationality) {
 
 //        List<Author> listAuthors = authorService.filterAuthor(name, nationality);
         List<Author> listAuthors = authorService.filterByAuthorWithExample(name, nationality);
@@ -100,25 +88,20 @@ public class AuthorController implements GenericController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody AuthorDTO dto){
-        try {
-            UUID idAuthor = UUID.fromString(id);
-            Optional<Author> authorGet = authorService.findById(idAuthor);
+    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody AuthorDTO dto) {
 
-            if (authorGet.isEmpty())
-                return ResponseEntity.notFound().build();
+        UUID idAuthor = UUID.fromString(id);
+        Optional<Author> authorGet = authorService.findById(idAuthor);
 
-            Author author = authorGet.get();
-            author.setName(dto.name());
-            author.setNationality(dto.nationality());
-            author.setNationality(dto.nationality());
+        if (authorGet.isEmpty())
+            return ResponseEntity.notFound().build();
 
-            authorService.updateAuthor(author);
+        Author author = authorGet.get();
+        author.setName(dto.name());
+        author.setNationality(dto.nationality());
+        author.setNationality(dto.nationality());
+        authorService.updateAuthor(author);
 
-            return ResponseEntity.noContent().build();
-        } catch (DuplicatedRegisterException e) {
-            ErrorExceptResponse errorResponse = ErrorExceptResponse.conflictError(e.getMessage());
-            return ResponseEntity.status(errorResponse.status()).body(errorResponse);
-        }
+        return ResponseEntity.noContent().build();
     }
 }

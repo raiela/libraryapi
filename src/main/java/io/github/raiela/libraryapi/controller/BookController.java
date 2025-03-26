@@ -25,21 +25,12 @@ public class BookController implements GenericController {
     private final BookMapper bookMapper;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid RegisterBookDTO dto){
-        try {
+    public ResponseEntity<Object> save(@RequestBody @Valid RegisterBookDTO dto) {
 
-            Book book = bookMapper.toEntity(dto);
-            bookService.saveBook(book);
+        Book book = bookMapper.toEntity(dto);
+        bookService.saveBook(book);
+        URI location = generateLocationHeader(book.getId());
 
-            URI location = generateLocationHeader(book.getId());
-
-            return ResponseEntity.created(location).build();
-        } catch (DuplicatedRegisterException e){
-            ErrorExceptResponse errorDto = ErrorExceptResponse.conflictError(e.getMessage());
-            return ResponseEntity.status(errorDto.status()).body(errorDto);
-        } catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
+        return ResponseEntity.created(location).build();
     }
 }
