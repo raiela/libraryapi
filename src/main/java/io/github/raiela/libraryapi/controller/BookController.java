@@ -4,9 +4,11 @@ import io.github.raiela.libraryapi.controller.dto.RegisterBookDTO;
 import io.github.raiela.libraryapi.controller.dto.ResultFindBookDTO;
 import io.github.raiela.libraryapi.controller.mappers.BookMapper;
 import io.github.raiela.libraryapi.model.Book;
+import io.github.raiela.libraryapi.model.BookGenre;
 import io.github.raiela.libraryapi.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,5 +49,30 @@ public class BookController implements GenericController {
             bookService.deleteBook(book);
             return ResponseEntity.noContent().build();
         }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<ResultFindBookDTO>> pesquisa(
+            @RequestParam(value = "isbn", required = false)
+            String isbn,
+            @RequestParam(value = "title", required = false)
+            String title,
+            @RequestParam(value = "authorName", required = false)
+            String authorName,
+            @RequestParam(value = "genero", required = false)
+            BookGenre genre,
+            @RequestParam(value = "publicationYear", required = false)
+            Integer publicationYear,
+            @RequestParam(value = "page", defaultValue = "0")
+            Integer page,
+            @RequestParam(value = "pageLengh", defaultValue = "10")
+            Integer pageLengh
+    ){
+        Page<Book> resultPage = bookService.search(
+                isbn, title, authorName, genre, publicationYear, page, pageLengh);
+
+        Page<ResultFindBookDTO> result = resultPage.map(bookMapper::toDTO);
+
+        return ResponseEntity.ok(result);
     }
 }
