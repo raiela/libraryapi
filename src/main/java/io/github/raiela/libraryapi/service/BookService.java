@@ -3,7 +3,6 @@ package io.github.raiela.libraryapi.service;
 import io.github.raiela.libraryapi.model.Book;
 import io.github.raiela.libraryapi.model.BookGenre;
 import io.github.raiela.libraryapi.repository.BookRepository;
-import io.github.raiela.libraryapi.repository.specs.BookSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
