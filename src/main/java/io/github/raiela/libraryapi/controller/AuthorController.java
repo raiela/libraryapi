@@ -1,9 +1,9 @@
 package io.github.raiela.libraryapi.controller;
 
-import io.github.raiela.libraryapi.controller.mappers.AuthorMapper;
-import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
 import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
 import io.github.raiela.libraryapi.controller.dto.ErrorExceptResponse;
+import io.github.raiela.libraryapi.controller.mappers.AuthorMapper;
+import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
 import io.github.raiela.libraryapi.exceptions.NotAllowedActionException;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/autores")
 @RequiredArgsConstructor
-public class AuthorController {
+public class AuthorController implements GenericController {
 
     private final AuthorService authorService;
     private final AuthorMapper authorMapper;
@@ -33,11 +32,7 @@ public class AuthorController {
             Author author = authorMapper.toEntity(dto);
             authorService.saveAuthor(author);
 
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(author.getId())
-                    .toUri();
+            URI location = generateLocationHeader(author.getId());
 
             return ResponseEntity.created(location).build();
         } catch (DuplicatedRegisterException e) {

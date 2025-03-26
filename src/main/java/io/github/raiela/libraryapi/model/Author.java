@@ -1,5 +1,6 @@
 package io.github.raiela.libraryapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +35,8 @@ public class Author {
     @Column(name = "nacionalidade", length = 50, nullable = false)
     private String nationality ;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Book> books;
 
     @CreatedDate
