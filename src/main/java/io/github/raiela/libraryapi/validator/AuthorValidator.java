@@ -16,20 +16,20 @@ public class AuthorValidator {
         this.authorRepository = authorRepository;
     }
 
-    public void validar(Author author){
-        if(existsAuthor(author))
+    public void validate(Author author) {
+        if (existsAuthor(author))
             throw new DuplicatedRegisterException("Autor já cadastrado");
 
     }
 
-    private boolean existsAuthor(Author author){
+    private boolean existsAuthor(Author author) {
         Optional<Author> authorGet = authorRepository
                 .findByNameAndBirthDateAndNationality(
                         author.getName(),
                         author.getBirthDate(),
                         author.getNationality());
 
-        if(author.getId() == null)
+        if (author.getId() == null)
             return authorGet.isPresent();
 
         return authorGet.isPresent() && !author.getId().equals(authorGet.get().getId());

@@ -3,6 +3,7 @@ package io.github.raiela.libraryapi.service;
 import io.github.raiela.libraryapi.model.Book;
 import io.github.raiela.libraryapi.model.BookGenre;
 import io.github.raiela.libraryapi.repository.BookRepository;
+import io.github.raiela.libraryapi.validator.BookValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,8 +21,10 @@ import static io.github.raiela.libraryapi.repository.specs.BookSpecs.*;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookValidator bookValidator;
 
     public Book saveBook(Book book) {
+        bookValidator.validate(book);
         return bookRepository.save(book);
     }
 
@@ -72,6 +75,7 @@ public class BookService {
         if(book.getId() == null)
             throw new IllegalArgumentException("Para atualizar, é necessário que o autor já esteja na base");
 
+        bookValidator.validate(book);
         bookRepository.save(book);
 
     }
