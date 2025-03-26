@@ -1,6 +1,7 @@
 package io.github.raiela.libraryapi.controller.mappers;
 
 import io.github.raiela.libraryapi.controller.dto.RegisterBookDTO;
+import io.github.raiela.libraryapi.controller.dto.ResultFindBookDTO;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.model.Book;
 import io.github.raiela.libraryapi.repository.AuthorRepository;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = AuthorMapper.class)
 public abstract class BookMapper {
 
     @Autowired
@@ -22,4 +23,6 @@ public abstract class BookMapper {
     protected Author getAuthor(UUID authorId) {
         return authorRepository.findById(authorId).orElse(null);
     }
+
+    public abstract ResultFindBookDTO toDTO(Book book);
 }
