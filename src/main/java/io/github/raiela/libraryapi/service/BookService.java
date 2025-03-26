@@ -42,29 +42,37 @@ public class BookService {
 
         Specification<Book> specs = Specification.where((root, query, cb) -> cb.conjunction());
 
-        if(isbn != null){
+        if (isbn != null) {
             // query = query and isbn = :isbn
             specs = specs.and(isbnEqual(isbn));
         }
 
-        if(title != null){
+        if (title != null) {
             specs = specs.and(titleLike(title));
         }
 
-        if(genre != null){
+        if (genre != null) {
             specs = specs.and(genreEqual(genre));
         }
 
-        if(publicationYear != null){
+        if (publicationYear != null) {
             specs = specs.and(publicationYearEqual(publicationYear));
         }
 
-        if(authorName != null){
+        if (authorName != null) {
             specs = specs.and(authorNameLike(authorName));
         }
 
         Pageable pageRequest = PageRequest.of(page, lenghPage);
 
         return bookRepository.findAll(specs, pageRequest);
+    }
+
+    public void updateBook(Book book) {
+        if(book.getId() == null)
+            throw new IllegalArgumentException("Para atualizar, é necessário que o autor já esteja na base");
+
+        bookRepository.save(book);
+
     }
 }
