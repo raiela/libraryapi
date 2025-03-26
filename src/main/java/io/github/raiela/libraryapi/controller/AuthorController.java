@@ -1,5 +1,6 @@
 package io.github.raiela.libraryapi.controller;
 
+import io.github.raiela.libraryapi.controller.mappers.AuthorMapper;
 import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
 import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
 import io.github.raiela.libraryapi.controller.dto.ErrorExceptResponse;
@@ -24,17 +25,18 @@ import java.util.stream.Collectors;
 public class AuthorController {
 
     private final AuthorService authorService;
+    private final AuthorMapper authorMapper;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO author){
+    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO dto){
         try {
-            Author authorEntity = author.mapperToAuthor();
-            authorService.saveAuthor(authorEntity);
+            Author author = authorMapper.toEntity(dto);
+            authorService.saveAuthor(author);
 
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
-                    .buildAndExpand(authorEntity.getId())
+                    .buildAndExpand(author.getId())
                     .toUri();
 
             return ResponseEntity.created(location).build();
@@ -48,12 +50,20 @@ public class AuthorController {
     public ResponseEntity<AuthorDTO> getAuthor(@PathVariable("id") String id){
         UUID idAuthor = UUID.fromString(id);
         Optional<Author> authorGet = authorService.findById(idAuthor);
-        if(authorGet.isPresent()){
-            Author author = authorGet.get();
-            AuthorDTO dto = new AuthorDTO(author.getId(), author.getName(), author.getBirthDate(), author.getNationality());
-            return  ResponseEntity.ok(dto);
-        }
-        return ResponseEntity.notFound().build();
+
+        return  authorService
+                .findById(idAuthor)
+                .map(author -> {
+                    AuthorDTO dto = authorMapper.toDTO(author);
+                    return  ResponseEntity.ok(dto);
+                }).orElseGet( () -> ResponseEntity.notFound().build());
+
+//        if(authorGet.isPresent()){
+//            Author author = authorGet.get();
+//            AuthorDTO dto = authorMapper.toDTO(author);
+//            return  ResponseEntity.ok(dto);
+//        }
+//        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("{id}")
@@ -81,11 +91,15 @@ public class AuthorController {
         List<Author> listAuthors = authorService.filterByAuthorWithExample(name, nationality);
 
         List<AuthorDTO> dtos = listAuthors.stream()
-                .map(author -> new AuthorDTO(author.getId(),
-                                                author.getName(),
-                                                author.getBirthDate(),
-                                                author.getNationality())
-                ).collect(Collectors.toList());
+                .map(authorMapper::toDTO)
+                .collect(Collectors.toList());
+
+//        List<AuthorDTO> dtos = listAuthors.stream()
+//                .map(author -> new AuthorDTO(author.getId(),
+//                                                author.getName(),
+//                                                author.getBirthDate(),
+//                                                author.getNationality())
+//                ).collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
     }

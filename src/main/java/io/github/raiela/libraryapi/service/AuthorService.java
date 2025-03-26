@@ -66,7 +66,7 @@ public class AuthorService {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
-                .withIgnoreCase()
+                .withIgnoreNullValues()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 
         Example<Author> authorExample = Example.of(author, matcher);
