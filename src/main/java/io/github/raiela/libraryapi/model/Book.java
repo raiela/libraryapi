@@ -41,10 +41,9 @@ public class Book {
     @Column(name = "preco", precision = 18, scale = 2)
     private BigDecimal price;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_autor")
     private Author author;
-
 
     @CreatedDate
     @Column(name = "data_cadastro")

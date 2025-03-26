@@ -1,78 +1,105 @@
 # Library API
 
 ## Descrição
-A Library API permite o gerenciamento de Autores e Livros, possibilitando operações de cadastro, consulta, atualização e remoção, seguindo regras de negócio bem definidas.
+API para cadastro e gerenciamento de autores e livros, incluindo funcionalidades de consulta, adição, atualização e remoção.
 
 ## Contrato da API
+**Endpoints:**
+- `/autores` - Gerenciamento de autores
+- `/livros` - Gerenciamento de livros
 
-### Cadastro de Autor
-**Base URI:** `/autores`
-- `POST /autores` - Cadastrar um novo autor
-- `GET /autores` - Consultar autores
-- `GET /autores/{id}` - Consultar um autor específico
-- `PUT /autores/{id}` - Atualizar um autor
-- `DELETE /autores/{id}` - Remover um autor
+## Cadastro de Autor
 
-### Cadastro de Livros
-**Base URI:** `/livros`
-- `POST /livros` - Cadastrar um novo livro
-- `GET /livros` - Consultar livros com filtros paginados
-- `GET /livros/{id}` - Consultar um livro específico
-- `PUT /livros/{id}` - Atualizar um livro
-- `DELETE /livros/{id}` - Remover um livro
+### Regras de Negócio
+- Não permitir cadastrar um autor com mesmo Nome, Data de Nascimento e Nacionalidade.
+- Não permitir excluir um autor que possuir algum livro.
 
-## Regras de Negócio
-### Autores
-- Um autor não pode ser cadastrado se já existir um autor com o mesmo Nome, Data de Nascimento e Nacionalidade.
-- Não é permitido excluir um autor que possua livros cadastrados.
+### Campos
+- Nome (*Obrigatório*)
+- Data de Nascimento (*Obrigatório*)
+- Nacionalidade (*Obrigatório*)
+- ID (UUID, gerado automaticamente)
+- Data Cadastro
+- Data Última Atualização
+- Usuário Última Atualização
 
-### Livros
-- O ISBN de um livro deve ser único.
-- Se a Data de Publicação for a partir de 2020, o preço é obrigatório.
-- A Data de Publicação não pode ser uma data futura.
+## Cadastro de Livros
 
-## Campos Lógicos
-- **ID** - UUID
-- **Data Cadastro** - Data de criação do registro
-- **Data Ultima Atualização** - Data da última modificação
-- **Usuário Ultima Atualização** - Usuário responsável pela última alteração
+### Regras de Negócio
+- Não permitir cadastrar um Livro com mesmo ISBN que outro.
+- Se a data de publicação for a partir de 2020, deverá ter o preço informado obrigatoriamente.
+- Data de publicação não pode ser uma data futura.
 
+### Campos
+- ISBN (*Obrigatório*)
+- Título (*Obrigatório*)
+- Data de Publicação (*Obrigatório*)
+- Gênero
+- Preço
+- Autor (*Obrigatório*)
+- ID (UUID, gerado automaticamente)
+- Data Cadastro
+- Data Última Atualização
+- Usuário Última Atualização
+
+---
 ## Tecnologias e Conceitos Utilizados
 
-### Auditoria com `EnableJpaAuditing`
-- Ativar auditoria com `@EnableJpaAuditing`
-- Utiliza `@EntityListeners(AuditingEntityListener.class)`
-- Campos automáticos: `@CreatedDate` e `@LastModifiedDate`
+### @EnableJpaAuditing
+- Permite auditar entidades automaticamente.
+- Utiliza `@EntityListeners(AuditingEntityListener.class)`.
+- Anotações `@CreatedDate` e `@LastModifiedDate` para registrar data de criação e última modificação.
 
 ### Idempotência
-- Garantia de que uma requisição repetida produz o mesmo efeito que uma única execução.
-- Evita cadastros duplicados e alterações inconsistentes.
+- Conceito que garante que a mesma requisição executada múltiplas vezes tenha o mesmo efeito.
+- Aplicado em operações de escrita para evitar efeitos colaterais indesejados.
 
 ### Exceções Personalizadas
-- Implementação de exceções personalizadas para melhor tratamento de erros.
-- Uso de `@RestControllerAdvice` para capturar e formatar respostas de erro.
+- Uso de `@RestControllerAdvice` para centralizar o tratamento de exceções.
+- Definição de classes de erro personalizadas para padronizar respostas.
 
 ### Lombok
 - Uso de `@AllArgsConstructor` para gerar automaticamente um construtor com todos os argumentos obrigatórios.
 - Redução de boilerplate no código.
+- Uso de `@RequiredArgsConstructor` para gerar automaticamente construtores que incluam variáveis declaradas como obrigatórias.
 
 ### Validação com `@Valid`
 - Uso da dependência `spring-boot-starter-validation`.
-- Anotações como `@NotNull`, `@Size`, `@Pattern` para validar entrada de dados.
+- Permite validação automática de entidades e DTOs.
 
-### Pesquisa Dinâmica com `Example`
-- Uso da API `Example` do Spring Data JPA para permitir buscas flexíveis.
-- Permite consultas dinâmicas sem necessidade de criar múltiplos métodos no repositório.
+### Pesquisa Dinâmica com Example
+- Utiliza `ExampleMatcher` para criar consultas dinâmicas e flexíveis.
+- Permite buscar registros baseando-se nos valores informados em um objeto de exemplo.
 
-## Contribuição
-- Fork o repositório
-- Crie um branch para sua feature
-- Envie um pull request
+### MapStruct
+- Framework para mapeamento automático entre objetos.
+- Reduz necessidade de conversões manuais entre DTOs e entidades.
+- **Exemplo de Uso:**
+```java
+@Mapper(componentModel = "spring")
+public interface AutorMapper {
+    AutorDTO toDto(Autor autor);
+    Autor toEntity(AutorDTO autorDTO);
+}
+```
 
-## Autor
-Projeto desenvolvido por Raiela Quirino.
+### Supplier
+- Interface funcional do Java que fornece valores sob demanda.
+- **Exemplo de Uso:**
+```java
+Supplier<LocalDateTime> dataAtual = LocalDateTime::now;
+System.out.println("Data Atual: " + dataAtual.get());
+```
 
-Projeto desenvolvido durante o curso "Spring Boot Expert: JPA, REST, JWT, OAuth2 com Docker e AWS" ministrado pelo professor Dougllas Sousa.
+### Métodos de Referência
+- Simplifica chamadas a métodos estáticos ou de instância.
+- **Exemplo de Uso:**
+```java
+List<String> nomes = List.of("Ana", "Bruno", "Carlos");
+nomes.forEach(System.out::println);
+```
 
+---
 
+Se desejar adicionar mais detalhes ou modificar algo, me avise! 🚀
 

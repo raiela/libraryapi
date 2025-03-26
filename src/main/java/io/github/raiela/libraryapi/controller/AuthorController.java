@@ -1,16 +1,16 @@
 package io.github.raiela.libraryapi.controller;
 
-import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
 import io.github.raiela.libraryapi.controller.dto.AuthorDTO;
 import io.github.raiela.libraryapi.controller.dto.ErrorExceptResponse;
+import io.github.raiela.libraryapi.controller.mappers.AuthorMapper;
+import io.github.raiela.libraryapi.exceptions.DuplicatedRegisterException;
 import io.github.raiela.libraryapi.exceptions.NotAllowedActionException;
 import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.service.AuthorService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -20,22 +20,19 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores")
-@AllArgsConstructor
-public class AuthorController {
+@RequiredArgsConstructor
+public class AuthorController implements GenericController {
 
     private final AuthorService authorService;
+    private final AuthorMapper authorMapper;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO author){
+    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO dto){
         try {
-            Author authorEntity = author.mapperToAuthor();
-            authorService.saveAuthor(authorEntity);
+            Author author = authorMapper.toEntity(dto);
+            authorService.saveAuthor(author);
 
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(authorEntity.getId())
-                    .toUri();
+            URI location = generateLocationHeader(author.getId());
 
             return ResponseEntity.created(location).build();
         } catch (DuplicatedRegisterException e) {
@@ -48,12 +45,20 @@ public class AuthorController {
     public ResponseEntity<AuthorDTO> getAuthor(@PathVariable("id") String id){
         UUID idAuthor = UUID.fromString(id);
         Optional<Author> authorGet = authorService.findById(idAuthor);
-        if(authorGet.isPresent()){
-            Author author = authorGet.get();
-            AuthorDTO dto = new AuthorDTO(author.getId(), author.getName(), author.getBirthDate(), author.getNationality());
-            return  ResponseEntity.ok(dto);
-        }
-        return ResponseEntity.notFound().build();
+
+        return  authorService
+                .findById(idAuthor)
+                .map(author -> {
+                    AuthorDTO dto = authorMapper.toDTO(author);
+                    return  ResponseEntity.ok(dto);
+                }).orElseGet( () -> ResponseEntity.notFound().build());
+
+//        if(authorGet.isPresent()){
+//            Author author = authorGet.get();
+//            AuthorDTO dto = authorMapper.toDTO(author);
+//            return  ResponseEntity.ok(dto);
+//        }
+//        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("{id}")
@@ -81,11 +86,15 @@ public class AuthorController {
         List<Author> listAuthors = authorService.filterByAuthorWithExample(name, nationality);
 
         List<AuthorDTO> dtos = listAuthors.stream()
-                .map(author -> new AuthorDTO(author.getId(),
-                                                author.getName(),
-                                                author.getBirthDate(),
-                                                author.getNationality())
-                ).collect(Collectors.toList());
+                .map(authorMapper::toDTO)
+                .collect(Collectors.toList());
+
+//        List<AuthorDTO> dtos = listAuthors.stream()
+//                .map(author -> new AuthorDTO(author.getId(),
+//                                                author.getName(),
+//                                                author.getBirthDate(),
+//                                                author.getNationality())
+//                ).collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
     }

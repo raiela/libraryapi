@@ -6,6 +6,7 @@ import io.github.raiela.libraryapi.repository.AuthorRepository;
 import io.github.raiela.libraryapi.repository.BookRepository;
 import io.github.raiela.libraryapi.validator.AuthorValidator;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
@@ -65,7 +66,7 @@ public class AuthorService {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
-                .withIgnoreCase()
+                .withIgnoreNullValues()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 
         Example<Author> authorExample = Example.of(author, matcher);
