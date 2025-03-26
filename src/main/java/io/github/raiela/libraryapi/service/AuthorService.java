@@ -58,7 +58,7 @@ public class AuthorService {
         return authorRepository.findAll();
     }
 
-    public List<Author> filterByAuthorWithExample(String name, String nationality){
+    public List<Author> c(String name, String nationality){
         Author author = new Author();
         author.setName(name);
         author.setNationality(nationality);
