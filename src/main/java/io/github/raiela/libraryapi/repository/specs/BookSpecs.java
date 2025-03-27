@@ -26,10 +26,10 @@ public class BookSpecs {
                         root.get("publicationDate"), cb.literal("YYYY")),publicationYear.toString());
     }
 
-    public static Specification<Book> authorNameLike(String nome){
+    public static Specification<Book> authorNameLike(String name){
         return (root, query, cb) -> {
             Join<Object, Object> joinAutor = root.join("author", JoinType.INNER);
-            return cb.like( cb.upper(joinAutor.get("nome")), "%" + nome.toUpperCase() + "%" );
+            return cb.like( cb.upper(joinAutor.get("name")), "%" + name.toUpperCase() + "%" );
         };
     }
 }
