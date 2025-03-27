@@ -67,6 +67,8 @@ API para cadastro e gerenciamento de autores e livros, incluindo funcionalidades
 - Uso da dependência `spring-boot-starter-validation`.
 - Permite validação automática de entidades e DTOs.
 
+### Specification do JPA
+
 ### Pesquisa Dinâmica com Example
 - Utiliza `ExampleMatcher` para criar consultas dinâmicas e flexíveis.
 - Permite buscar registros baseando-se nos valores informados em um objeto de exemplo.

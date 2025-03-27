@@ -5,7 +5,6 @@ import io.github.raiela.libraryapi.model.Author;
 import io.github.raiela.libraryapi.repository.AuthorRepository;
 import io.github.raiela.libraryapi.repository.BookRepository;
 import io.github.raiela.libraryapi.validator.AuthorValidator;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -24,14 +23,14 @@ public class AuthorService {
     private final BookRepository bookRepository;
 
     public Author saveAuthor(Author author){
-        authorValidator.validar(author);
+        authorValidator.validate(author);
         return authorRepository.save(author);
     }
 
     public void updateAuthor(Author author){
         if(author.getId() == null)
             throw new IllegalArgumentException("Para atualizar, é necessário que o autor já esteja na base");
-        authorValidator.validar(author);
+        authorValidator.validate(author);
         authorRepository.save(author);
     }
 
