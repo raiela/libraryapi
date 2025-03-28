@@ -101,6 +101,11 @@ List<String> nomes = List.of("Ana", "Bruno", "Carlos");
 nomes.forEach(System.out::println);
 ```
 
+### Spring Security
+- Framework para garantir a segurança de aplicações, fornecendo autenticação e autorização.
+- Permite configurar filtros de segurança, roles de usuários, criptografia de senhas e controle de acesso a recursos.
+- Utiliza o `@EnableWebSecurity` para configurar segurança na aplicação
+
 ---
 
 Se desejar adicionar mais detalhes ou modificar algo, me avise! 🚀
