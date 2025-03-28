@@ -51,7 +51,7 @@ public class BookController implements GenericController {
         }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping("/filtrar")
     public ResponseEntity<Page<ResultFindBookDTO>> pesquisa(
             @RequestParam(value = "isbn", required = false)
             String isbn,
